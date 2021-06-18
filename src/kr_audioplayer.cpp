@@ -6,7 +6,7 @@
 #include "kr_audioplayer.h"
 
 
-cbuf circBuffer(1024 * 20); //64);
+cbuf circBuffer(1024 * 24); //64);
 char readBuffer[1000] __attribute__((aligned(4)));
 
 uint8_t mp3buff[32]; // vs1053 likes 32 bytes at a time

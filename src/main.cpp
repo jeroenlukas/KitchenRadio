@@ -16,6 +16,7 @@
 #include "frontpanel.h"
 #include "helloMp3.h"
 #include "kr_webserver.h"
+#include "kr_info.h"
 
 #define LED_BUILTIN 2
 
@@ -23,21 +24,36 @@ const char *ssid = CONF_WIFI_SSID;
 const char *password = CONF_WIFI_PASSWORD;
 
 Ticker ticker_1s_ref;
+Ticker ticker_stream_ref;
 
 #define SOUNDMODE_OFF 0
-#define SOUNDMODE_WEBRADIO 2
-#define SOUNDMODE_BLUETOOTH 1
+#define SOUNDMODE_WEBRADIO 1
+#define SOUNDMODE_BLUETOOTH 2
 
 int sound_mode = SOUNDMODE_OFF;
 
 // LCD
 LiquidCrystal_PCF8574 lcd(0x27);
 
-bool first = true;
+//bool first = true;
 
 void ticker_1s()
 {
     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    int uptime = info_get_int(INFO_UPTIME);
+    info_set_int(INFO_UPTIME, uptime + 1);
+
+    int vs1053_AUDATA = player.read_register(0x5);
+   // info_set_int(INFO_AUDIO_SAMPLERATE, vs1053_AUDATA & 0xFFFE);
+   // info_set_int(INFO_AUDIO_CHANNELS, (vs1053_AUDATA & 1) + 1);
+   // info_set_int(INFO_AUDIO_BITRATE, player.get_bitrate());
+    
+}
+
+void ticker_stream()
+{
+    webserver_handleclient();
+    
 }
 
 void set_sound_mode(int sound_mode_new)
@@ -58,11 +74,11 @@ void set_sound_mode(int sound_mode_new)
         //  circBuffer.flush();
        // bluetoothsink_end();
 
-        //a2dp_sink.r
+        bluetoothsink_end();
         break;
     }
 
-    sound_mode = sound_mode_new;
+    
 
     lcd.setCursor(0, 3);
     player.softReset();
@@ -82,13 +98,10 @@ void set_sound_mode(int sound_mode_new)
         lcd.printf("%-16s", "Bluetooth");
 
         bluetoothsink_start();
-       /* a2dp_sink.start("KitchenRadio");
-        circBuffer.flush();
-        circBuffer.write((char *)bt_wav_header, 44); // very important!!!
-        circBuffer.write((char *)bt_wav_header, 44); // very important!!!
-        circBuffer.write((char *)bt_wav_header, 44); // very important!!!*/
         break;
     }
+
+    sound_mode = sound_mode_new;
 }
 
 void setup()
@@ -97,8 +110,12 @@ void setup()
 
     pinMode(LED_BUILTIN, OUTPUT);
 
+    // Info
+    info_set_int(INFO_UPTIME, 0);
+
     // Tickers
     ticker_1s_ref.attach(1, ticker_1s);
+    ticker_stream_ref.attach(0.1, ticker_stream);
 
     // SPI
     SPI.begin(18, 19, 23, 32);
@@ -137,21 +154,15 @@ void setup()
     lcd.printf("IP: %s", WiFi.localIP().toString().c_str());
 
     player.setVolume(70);
-    delay(100);
-    player.playChunk(hello2, sizeof(hello2)); //VS1053 is wake up & running
-
+   
     webserver_setup();
 
     delay(100);
-
-    //webradio_open_url(0);
-
-    // a2dp_sink.start("KitchenRadio");
+    
     bluetoothsink_setup();
-    //a2dp_sink.set_stream_reader(bluetoothsink_read_data_stream, false);
- // a2dp_sink.set_avrc_metadata_callback(bluetoothsink_avrc_metadata_callback);
-    //circBuffer.write((char *)bt_wav_header, 44); // very important!!!
-    //player.playChunk(bt_wav_header, 44);
+    
+    delay(100);
+
     set_sound_mode(SOUNDMODE_OFF);
 }
 
@@ -167,7 +178,7 @@ void loop()
     else if (sound_mode == SOUNDMODE_BLUETOOTH)
         bluetoothsink_handle_stream();
 
-    webserver_handleclient();
+    front_read_encoder();
 
     if (millis() - lastms_1s > 1000)
     {
@@ -190,8 +201,8 @@ void loop()
         front_read_buttons();
     }
 
-    // Should be read as often as possible
-    front_read_encoder();
+    
+    
 
     // ------=== FLAGS ===-------
     if (f_front_pot_volume_changed)
@@ -252,7 +263,7 @@ void loop()
 
         else if (sound_mode == SOUNDMODE_BLUETOOTH)
         {
-            //bluetoothsink_previous();
+            bluetoothsink_previous();
         }
     }
 
@@ -270,7 +281,7 @@ void loop()
 
         if (sound_mode == SOUNDMODE_BLUETOOTH)
         {
-          //  bluetoothsink_next();
+            bluetoothsink_next();
         }
     }
 

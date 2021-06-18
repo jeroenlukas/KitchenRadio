@@ -26,96 +26,64 @@ unsigned char bt_wav_header[44] = {
 
 bool f_bluetoothsink_metadata_received = false;
 
-char bluetooth_media_title[255];  
+char bluetooth_media_title[255];
 
-
+int cnt = 0;
 void bluetoothsink_avrc_metadata_callback(uint8_t data1, const uint8_t *data2)
 {
-  
-  Serial.printf("AVRC metadata rsp: attribute id 0x%x, %s\n", data1, data2);
 
-  if(data1 == 0x1)
-  {
-    // Title
-    strncpy(bluetooth_media_title, (char*)data2, sizeof(bluetooth_media_title)-1);
-  }
-  else if(data1 == 0x2)
-  {
-      strncat(bluetooth_media_title, " - ", sizeof(bluetooth_media_title)-1);
-      strncat(bluetooth_media_title, (char*)data2, sizeof(bluetooth_media_title)-1);      
-      f_bluetoothsink_metadata_received = true;
-  }
+    Serial.printf("AVRC metadata rsp: attribute id 0x%x, %s\n", data1, data2);
+
+    if (data1 == 0x1)
+    {
+        // Title
+        strncpy(bluetooth_media_title, (char *)data2, sizeof(bluetooth_media_title) - 1);
+    }
+    else if (data1 == 0x2)
+    {
+        strncat(bluetooth_media_title, " - ", sizeof(bluetooth_media_title) - 1);
+        strncat(bluetooth_media_title, (char *)data2, sizeof(bluetooth_media_title) - 1);
+        f_bluetoothsink_metadata_received = true;
+    }
 }
 
 void bluetoothsink_handle_stream()
 {
-  if (circBuffer.available())
-  {
-    // Does the VS1053 want any more data (yet)?
-    if (player.data_request())
+    if (circBuffer.available())
     {
-      {
-        /*if (first)
+        // Does the VS1053 want any more data (yet)?
+        if (player.data_request())
         {
-          first = false;
-          player.playChunk(bt_wav_header, 32);
-          player.playChunk(bt_wav_header+32, 44-32);
-          player.printDetails("info");
-          Serial.printf("\n Media type: %d", a2dp_sink.get_audio_type());
+
+            int bytesRead = circBuffer.read((char *)mp3buff, 32);
+
+            // If we didn't read the full 32 bytes, that's a worry
+            if (bytesRead != 32)
+            {
+                Serial.printf("Only read %d bytes from  circular buffer\n", bytesRead);
+            }
+
+            // Actually send the data to the VS1053
+            player.playChunk(mp3buff, bytesRead);
         }
-        else*/
-        {
-          // Read the data from the circuluar (ring) buffer
-          int bytesRead = circBuffer.read((char *)mp3buff, 32);
-
-          /*if (1)
-        {
-
-          for (int i = 0; i < bytesRead; i++)
-            Serial.printf(" %x", mp3buff[i]);
-          first = false;
-        }*/
-
-          // If we didn't read the full 32 bytes, that's a worry
-          if (bytesRead != 32)
-          {
-            Serial.printf("Only read %d bytes from  circular buffer\n", bytesRead);
-          }
-
-          // Actually send the data to the VS1053
-          player.playChunk(mp3buff, bytesRead);
-        }
-      }
     }
-  }
 }
 
 void bluetoothsink_read_data_stream(const uint8_t *data, uint32_t length)
 {
-  //if (sound_mode == SOUNDMODE_BLUETOOTH)
-  {
-    int bytes_read_from_stream = length;
+
+    //int bytes_read_from_stream = length;
 
     if (circBuffer.room() > length)
     {
-
-      // Read either the maximum available (max 100) or the number of bytes to the next meata data interval
-      //bytes_read_from_stream = webradio_client.read((uint8_t *)readBuffer, min(100, (int)webradio_client.available()));
-
-      // If we get -1 here it means nothing could be read from the stream
-      if (bytes_read_from_stream > 0)
-      {
-        // Add them to the circular buffer
-        circBuffer.write((char *)data, length);
-
-        // Some radio stations (eg BBC Radio 4!!!) limit the data to 92 bytes. Why?
-        /*if (bytes_read_from_stream < 92 && bytesReadFromStream != bytesUntilmetaData)
-                {
-                    Serial.printf("Only wrote %db to circ buff\n", bytesReadFromStream);
-                }*/
-      }
+        // If we get -1 here it means nothing could be read from the stream
+        if (length > 0)
+        {
+            // Add them to the circular buffer
+            circBuffer.write((char *)data, length); // length seems to be 4096 every time
+            //Serial.printf("\nRead %lu bytes", length);
+        }
     }
-  }
 }
 
 void bluetoothsink_setup()
@@ -126,14 +94,13 @@ void bluetoothsink_setup()
 
 void bluetoothsink_start()
 {
-    
-    //circBuffer.write((char *)bt_wav_header, 44); 
     a2dp_sink.start("KitchenRadio");
-    circBuffer.flush();
-    circBuffer.write((char *)bt_wav_header, 44); 
 
-    //player.playChunk(bt_wav_header, 44);
-    
+    circBuffer.flush();
+
+    delay(100);
+    circBuffer.write((char *)bt_wav_header, 44);
+    delay(100);
 }
 
 void bluetoothsink_end()
@@ -150,4 +117,3 @@ void bluetoothsink_previous()
 {
     a2dp_sink.previous();
 }
-
