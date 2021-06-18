@@ -1,13 +1,14 @@
-#ifndef BLUETOOTHSINK_H
-#define BLUETOOTHSINK_H
 
 #include <Arduino.h>
+#include <BluetoothA2DPSink.h>
+
+#include "kr_audioplayer.h"
+
+#include "kr_bluetoothsink.h"
 
 BluetoothA2DPSink a2dp_sink;
 
-bool f_bluetoothsink_metadata_received = false;
-
-unsigned char bt_wav_header[] = {
+unsigned char bt_wav_header[44] = {
     0x52, 0x49, 0x46, 0x46, // RIFF
     0xFF, 0xFF, 0xFF, 0xFF, // size
     0x57, 0x41, 0x56, 0x45, // WAVE
@@ -23,7 +24,10 @@ unsigned char bt_wav_header[] = {
     0xFF, 0xFF, 0xFF, 0xFF  // subchunk3size (endless)
 };
 
+bool f_bluetoothsink_metadata_received = false;
+
 char bluetooth_media_title[255];  
+
 
 void bluetoothsink_avrc_metadata_callback(uint8_t data1, const uint8_t *data2)
 {
@@ -114,4 +118,36 @@ void bluetoothsink_read_data_stream(const uint8_t *data, uint32_t length)
   }
 }
 
-#endif
+void bluetoothsink_setup()
+{
+    a2dp_sink.set_stream_reader(bluetoothsink_read_data_stream, false);
+    a2dp_sink.set_avrc_metadata_callback(bluetoothsink_avrc_metadata_callback);
+}
+
+void bluetoothsink_start()
+{
+    
+    //circBuffer.write((char *)bt_wav_header, 44); 
+    a2dp_sink.start("KitchenRadio");
+    circBuffer.flush();
+    circBuffer.write((char *)bt_wav_header, 44); 
+
+    //player.playChunk(bt_wav_header, 44);
+    
+}
+
+void bluetoothsink_end()
+{
+    a2dp_sink.end(false);
+}
+
+void bluetoothsink_next()
+{
+    a2dp_sink.next();
+}
+
+void bluetoothsink_previous()
+{
+    a2dp_sink.previous();
+}
+

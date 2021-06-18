@@ -1,27 +1,23 @@
-#ifndef WEBRADIO_H
-#define WEBRADIO_H
-
-#include <Arduino.h>
 #include <WiFi.h>
-#include "stations.h"
+#include "kr_webradio.h"
+#include "kr_audioplayer.h"
 
 WiFiClient webradio_client;
 
-
-
-
 bool dataPanic = false;
 
-void webradio_open_url(int station_no)
+void webradio_open_url(char *host, char *path)
 {
-    char *host = stations_host[station_no];
-    char *path = stations_path[station_no];
     if (webradio_client.connect(host, 80))
     {
         Serial.println("Connected now");
     }
+
     Serial.print(host);
     Serial.println(path);
+
+    circBuffer.flush();
+
     webradio_client.print(String("GET ") + path + " HTTP/1.1\r\n" +
                           "Host: " + host + "\r\n" +
                           "Connection: close\r\n\r\n");
@@ -33,11 +29,11 @@ void webradio_handle_stream(void)
     {
         int bytes_read_from_stream = 0;
 
-        if (circBuffer.room() > 99)
+        if (circBuffer.room() > 999)
         {
 
             // Read either the maximum available (max 100) or the number of bytes to the next meata data interval
-            bytes_read_from_stream = webradio_client.read((uint8_t *)readBuffer, min(100, (int)webradio_client.available()));
+            bytes_read_from_stream = webradio_client.read((uint8_t *)readBuffer, min(1000, (int)webradio_client.available()));
 
             // If we get -1 here it means nothing could be read from the stream
             if (bytes_read_from_stream > 0)
@@ -51,7 +47,6 @@ void webradio_handle_stream(void)
                     Serial.printf("Only wrote %db to circ buff\n", bytesReadFromStream);
                 }*/
             }
-            
         }
         else
         {
@@ -61,38 +56,38 @@ void webradio_handle_stream(void)
     }
 
     if (circBuffer.available())
-		{
-			// Does the VS1053 want any more data (yet)?
-			if (player.data_request())
-			{
-				{
-					// Read the data from the circuluar (ring) buffer
-					int bytesRead = circBuffer.read((char *)mp3buff, 32);
+    {
+        // Does the VS1053 want any more data (yet)?
+        if (player.data_request())
+        {
+            {
+                // Read the data from the circuluar (ring) buffer
+                int bytesRead = circBuffer.read((char *)mp3buff, 32);
 
-					// If we didn't read the full 32 bytes, that's a worry
-					if (bytesRead != 32)
-					{
-						Serial.printf("Only read %d bytes from  circular buffer\n", bytesRead);
-					}
+                // If we didn't read the full 32 bytes, that's a worry
+                if (bytesRead != 32)
+                {
+                    Serial.printf("Only read %d bytes from  circular buffer\n", bytesRead);
+                }
 
-					// Actually send the data to the VS1053
-					player.playChunk(mp3buff, bytesRead);
-				}
-			}
-		}
-		else
-		{
-			if (!dataPanic)
-			{
-				//Serial.println("PANIC No audio data to read from circular buffer");
-				// TODO: we might need to auto reconnect here?
-				dataPanic = true;
-			}
-			else
-			{
-				dataPanic = false;
-			}
-		}
+                // Actually send the data to the VS1053
+                player.playChunk(mp3buff, bytesRead);
+            }
+        }
+    }
+    else
+    {
+        if (!dataPanic)
+        {
+            //Serial.println("PANIC No audio data to read from circular buffer");
+            // TODO: we might need to auto reconnect here?
+            dataPanic = true;
+        }
+        else
+        {
+            dataPanic = false;
+        }
+    }
     /*  if (webradio_client.available() > 0) 
     {
         Serial.println("data avail");
@@ -143,5 +138,3 @@ void webradio_handle_stream(void)
     }*/
     return;
 }
-
-#endif
