@@ -1,0 +1,26 @@
+{
+	"folders": [
+        {
+            "name": "MediacontrollerESP32",
+            "path": "..\\..\\MediacontrollerESP32"
+        },
+        {
+            "name": "KitchenRadio",
+            "path": ".."
+        }
+    ],
+	"settings": {
+		"files.associations": {
+			"*.tpp": "cpp",
+			"ranges": "cpp",
+			"*.tcc": "cpp",
+			"deque": "cpp",
+			"list": "cpp",
+			"string": "cpp",
+			"unordered_map": "cpp",
+			"unordered_set": "cpp",
+			"vector": "cpp",
+			"system_error": "cpp"
+		}
+	}
+}

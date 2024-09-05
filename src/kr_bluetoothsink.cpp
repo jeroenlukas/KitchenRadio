@@ -8,6 +8,8 @@
 
 BluetoothA2DPSink a2dp_sink;
 
+esp_a2d_audio_state_t current_state;
+
 unsigned char bt_wav_header[44] = {
     0x52, 0x49, 0x46, 0x46, // RIFF
     0xFF, 0xFF, 0xFF, 0xFF, // size
@@ -16,7 +18,7 @@ unsigned char bt_wav_header[44] = {
     0x10, 0x00, 0x00, 0x00, // subchunk1size
     0x01, 0x00,             // audio format - pcm
     0x02, 0x00,             // numof channels
-    0x80, 0xbb, 0x00, 0x00, //, //samplerate 44k1: 0x44, 0xac, 0x00, 0x00       48k: 48000: 0x80, 0xbb, 0x00, 0x00,
+    0x44, 0xac, 0x00, 0x00, //, //samplerate 44k1: 0x44, 0xac, 0x00, 0x00       48k: 48000: 0x80, 0xbb, 0x00, 0x00,
     0x10, 0xb1, 0x02, 0x00, //byterate
     0x04, 0x00,             // blockalign
     0x10, 0x00,             // bits per sample - 16
@@ -31,7 +33,7 @@ char bluetooth_media_title[255];
 int cnt = 0;
 void bluetoothsink_avrc_metadata_callback(uint8_t data1, const uint8_t *data2)
 {
-
+a2dp_sink.set_auto_reconnect(true,  1000);
     Serial.printf("AVRC metadata rsp: attribute id 0x%x, %s\n", data1, data2);
 
     if (data1 == 0x1)
@@ -47,7 +49,7 @@ void bluetoothsink_avrc_metadata_callback(uint8_t data1, const uint8_t *data2)
     }
 }
 
-void bluetoothsink_handle_stream()
+void bluetoothsink_handle_stream() // not needed anymore, replaced by audio_feedbuffer()
 {
     if (circBuffer.available())
     {
@@ -86,17 +88,33 @@ void bluetoothsink_read_data_stream(const uint8_t *data, uint32_t length)
     }
 }
 
+void audio_state_changed(esp_a2d_audio_state_t state, void* ptr) {
+    Serial.println(a2dp_sink.to_str(state));
+    current_state = state;
+}
+
 void bluetoothsink_setup()
 {
     a2dp_sink.set_stream_reader(bluetoothsink_read_data_stream, false);
     a2dp_sink.set_avrc_metadata_callback(bluetoothsink_avrc_metadata_callback);
+    //esp_a2d_connection_state_t state = a2dp_sink.get_connection_state();
+   // a2dp_sink.set_auto_reconnect(true,  1000);
+    a2dp_sink.set_on_audio_state_changed(audio_state_changed);
 }
 
 void bluetoothsink_start()
 {
-    a2dp_sink.start("KitchenRadio");
+    //    a2dp_sink.set_auto_reconnect(true,  1000);
+    //a2dp_sink.set_on_audio_state_changed(audio_state_changed);
+    a2dp_sink.start("KitchenRadio", false);
+
+    //a2dp_sink.reconnect();
 
     circBuffer.flush();
+    /*if(a2dp_sink.get_last_peer_address()[0] != 0)
+        {
+            a2dp_sink.reconnect();
+        }*/
 
     delay(100);
     circBuffer.write((char *)bt_wav_header, 44);
@@ -105,6 +123,7 @@ void bluetoothsink_start()
 
 void bluetoothsink_end()
 {
+    a2dp_sink.disconnect();
     a2dp_sink.end(false);
 }
 
@@ -116,4 +135,27 @@ void bluetoothsink_next()
 void bluetoothsink_previous()
 {
     a2dp_sink.previous();
+}
+
+void bluetoothsink_playpause()
+{
+    if(a2dp_sink.is_connected())
+    {   
+    
+        switch(a2dp_sink.get_audio_state())
+        {
+            case ESP_A2D_AUDIO_STATE_REMOTE_SUSPEND:
+                a2dp_sink.play();
+                break;
+            case ESP_A2D_AUDIO_STATE_STARTED:
+                a2dp_sink.pause();
+                //a2dp_sink.
+                break;
+            case ESP_A2D_AUDIO_STATE_STOPPED:
+                // ?
+                a2dp_sink.play();
+            break;
+        }
+    }
+   
 }

@@ -24,6 +24,7 @@ void bluetoothsink_setup();
 
 void bluetoothsink_previous();
 void bluetoothsink_next();
+void bluetoothsink_playpause();
 
 
 #endif
