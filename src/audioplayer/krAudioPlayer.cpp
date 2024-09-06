@@ -5,10 +5,10 @@
 #include "configuration/config.h"
 //#include "configuration/configMisc.h"
 #include "configuration/constants.h"
-#include "audioplayer/kr_audioplayer.h"
+#include "audioplayer/krAudioPlayer.h"
 #include "audioplayer/cbuf_ps.h"
-#include "information/kr_info.h"
-#include "webradio/kr_webradio.h"
+#include "information/krInfo.h"
+#include "webradio/krWebradio.h"
 
 cbuf_ps circBuffer(1024); //64);
 char readBuffer[4096] __attribute__((aligned(4)));
@@ -50,7 +50,12 @@ void audio_flushbuffer()
 void audio_getVS1053info()
 {
     int vs1053_AUDATA = player.read_register(0x5);
-    info_set_int(INFO_AUDIO_SAMPLERATE, vs1053_AUDATA & 0xFFFE);
-    info_set_int(INFO_AUDIO_CHANNELS, (vs1053_AUDATA & 1) + 1);
-    info_set_int(INFO_AUDIO_BITRATE, player.get_bitrate());
+
+    information.audioPlayer.bitRate = player.get_bitrate();
+    information.audioPlayer.channels = (vs1053_AUDATA & 1) + 1;
+    information.audioPlayer.sampleRate = vs1053_AUDATA & 0xFFFE;
+
+    //info_set_int(INFO_AUDIO_SAMPLERATE, vs1053_AUDATA & 0xFFFE);
+    //info_set_int(INFO_AUDIO_CHANNELS, (vs1053_AUDATA & 1) + 1);
+    //info_set_int(INFO_AUDIO_BITRATE, player.get_bitrate());
 }

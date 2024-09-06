@@ -17,8 +17,6 @@
 // Encoder
 #define ROTARY_A    4
 #define ROTARY_B    0
-
-// Buttons
 #define BUTTON_ENCODER  2
 
 #endif

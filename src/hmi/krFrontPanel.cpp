@@ -4,7 +4,7 @@
 #include <BfButton.h>
 #include "configuration/configMisc.h"
 #include "configuration/configPinout.h"
-#include "hmi/frontpanel.h"
+#include "hmi/krFrontPanel.h"
 
 // To calibrate button ADC values
 //#define CAL_BUTTONS

@@ -17,13 +17,13 @@
 
 #include "configuration/config.h"
 #include "configuration/stations.h"
-#include "audioplayer/kr_audioplayer.h"
-#include "webradio/kr_webradio.h"
-#include "bluetoothsink/kr_bluetoothsink.h"
-#include "hmi/frontpanel.h"
-#include "webserver/kr_webserver.h"
-#include "information/kr_info.h"
-#include "information/kr_weather.h"
+#include "audioplayer/krAudioPlayer.h"
+#include "webradio/krWebradio.h"
+#include "bluetoothsink/krBluetoothsink.h"
+#include "hmi/krFrontPanel.h"
+#include "webserver/krWebserver.h"
+#include "information/krInfo.h"
+#include "information/krWeather.h"
 #include "configuration/constants.h"
 #include "version.h"
 
@@ -68,8 +68,10 @@ void lcd_clearrow(int row)
 
 void ticker_1s()
 {
-    int uptime = info_get_int(INFO_UPTIME);
-    info_set_int(INFO_UPTIME, uptime + 1);
+    //int uptime = info_get_int(INFO_UPTIME);
+    //info_set_int(INFO_UPTIME, uptime + 1);
+
+    information.system.uptimeSeconds++;
 
     f_update_rssi = true;
 }
@@ -197,7 +199,9 @@ void setup()
     pinMode(LED_BUILTIN, OUTPUT);
 
     // Info
-    info_set_int(INFO_UPTIME, 0);
+    //info_set_int(INFO_UPTIME, 0);
+
+    krInfoInitialize();
 
     front_setup();
 
@@ -436,6 +440,7 @@ void loop()
     {
         f_update_rssi = false;
         lcd.setCursor(0, 1);
+        information.system.wifiRSSI = WiFi.RSSI();
         //lcd.printf("RSSI:%ddBm %7d", WiFi.RSSI(), circBuffer.available());
     }
 
@@ -446,7 +451,7 @@ void loop()
         f_update_time = false;
         lcd_clearrow(0);
         lcd.setCursor(0,0);
-        lcd.printf("%.1f", info_get_float(INFO_WEATHER_TEMP));
+        lcd.printf("%.1f", information.weather.temperature);
         lcd.write(byte(LCD_CUST_DEGREE));
         lcd.write("C");
         lcd.setCursor(15, 0);
@@ -454,10 +459,11 @@ void loop()
 
         lcd_clearrow(1);
         lcd.setCursor(0,1);
-        lcd.printf("%.0fkm/h", round(info_get_float(INFO_WEATHER_WIND_KMH)));
+        lcd.printf("%.0fkm/h", round(information.weather.windSpeedKmh));
         lcd.setCursor(11, 1);
         lcd.printf(Netherlands.dateTime("D d M").c_str());
-        info_set_string(INFO_TIME_SHORT, Netherlands.dateTime("H:i"));
+        //info_set_string(INFO_TIME_SHORT, Netherlands.dateTime("H:i"));
+        information.timeShort = Netherlands.dateTime("H:i");
     }
 
     if(f_button_off_pressed)

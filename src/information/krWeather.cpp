@@ -1,7 +1,7 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include "ArduinoJson.h"
-#include "information/kr_info.h"
+#include "information/krInfo.h"
 #include "configuration/config.h"
 
 //#include "configMisc.h"
@@ -31,16 +31,17 @@ bool weather_retrieve()
         //Serial.println(payload);
         DynamicJsonDocument doc(1024);
         deserializeJson(doc, payload);
-        weather_temperature = doc["main"]["temp"];
-        windspeed = doc["wind"]["speed"];
+        information.weather.temperature = doc["main"]["temp"];
+        information.weather.windSpeedKmh = (double)(doc["wind"]["speed"]) * 3.6;
         
-        weather_temperature_int = round(weather_temperature);
-        windspeed_kmh = windspeed * 3.6;
+        //weather_temperature_int = round(weather_temperature);
+        //windspeed_kmh = windspeed * 3.6;
         //temperature = temperature_str.toDouble();
         //Serial.printf("temp: %f - wind: %f km/h", weather_temperature, windspeed_kmh );
 
-        info_set_float(INFO_WEATHER_TEMP, weather_temperature);
-        info_set_float(INFO_WEATHER_WIND_KMH, windspeed_kmh);
+        
+        //info_set_float(INFO_WEATHER_TEMP, weather_temperature);
+        //info_set_float(INFO_WEATHER_WIND_KMH, windspeed_kmh);
 
         ret = true;
     }

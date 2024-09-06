@@ -3,10 +3,10 @@
 #include "FS.h"
 #include <LittleFS.h>
 
-#include "hmi/frontpanel.h"
-#include "webserver/kr_webserver.h"
+#include "hmi/krFrontPanel.h"
+#include "webserver/krWebserver.h"
 #include "time.h"
-#include "information/kr_info.h"
+#include "information/krInfo.h"
 
 
 
@@ -31,18 +31,19 @@ void handleRootPath()
     file.close();
 
     content = webheader + 
-            "<br />Current time: " + info_get_string(INFO_TIME_SHORT) +
-            "<br />System uptime: " + String(info_get_int(INFO_UPTIME)) + " seconds"
+            "<br />Current time: " + information.timeShort +
+            "<br />System uptime: " + String(information.system.uptimeSeconds) + " seconds"
+            "<br />WiFI RSSI: " + String(information.system.wifiRSSI) + " dBm"
             "<h3>&#127926; Audio</h3>"
             "<table>"
-            "<tr><td width='200'>Sample rate:</td><td>" + String((uint16_t)info_get_int(INFO_AUDIO_SAMPLERATE)) + " Hz</td></tr>"
-            "<tr><td>Channels:</td><td>" + String(info_get_int(INFO_AUDIO_CHANNELS)) + "</td></tr>"
-            "<tr><td>Bitrate:</td><td>" + String(info_get_int(INFO_AUDIO_BITRATE)) + " kbps</td></tr>"
+            "<tr><td width='200'>Sample rate:</td><td>" + String((uint16_t)information.audioPlayer.sampleRate) + " Hz</td></tr>"
+            "<tr><td>Channels:</td><td>" + String(information.audioPlayer.channels) + "</td></tr>"
+            "<tr><td>Bitrate:</td><td>" + String(information.audioPlayer.bitRate) + " kbps</td></tr>"
             "</table>"
             "<h3>&#9925; Weather</h3>"
             "<table>"
-            "<tr><td width='200'>Temperature:</td><td>" + String(info_get_float(INFO_WEATHER_TEMP)) + " &deg;C</td></tr>"
-            "<tr><td>Windspeed:</td><td>" + String(info_get_float(INFO_WEATHER_WIND_KMH)) + " km/h</td></tr>"
+            "<tr><td width='200'>Temperature:</td><td>" + String(information.weather.temperature) + " &deg;C</td></tr>"
+            "<tr><td>Windspeed:</td><td>" + String(information.weather.windSpeedKmh) + " km/h</td></tr>"
             "</table>"
             "<hr><i>"
             + (fileContent) + 

@@ -1,6 +1,6 @@
 #include <WiFi.h>
-#include "webradio/kr_webradio.h"
-#include "audioplayer/kr_audioplayer.h"
+#include "webradio/krWebradio.h"
+#include "audioplayer/krAudioPlayer.h"
 #include "configuration/configMisc.h"
 
 
