@@ -2,9 +2,9 @@
 #include <RotaryEncoder.h>
 #include <BfButtonManager.h>
 #include <BfButton.h>
-#include "configuration/configMisc.h"
-#include "configuration/configPinout.h"
+#include "configuration/config.h"
 #include "hmi/krFrontPanel.h"
+#include "flags.h"
 
 // To calibrate button ADC values
 //#define CAL_BUTTONS
@@ -21,7 +21,7 @@ int prev_adc_pot_bass = 0;
 bool prev_button_encoder = true;
 
 // Externally available
-bool f_front_pot_volume_changed = false;
+//bool f_front_pot_volume_changed = false;
 bool f_front_pot_treble_changed = false;
 bool f_front_pot_bass_changed = false;
 
@@ -130,7 +130,7 @@ void front_read_pots()
 
     if (adc_pot_vol < (prev_adc_pot_vol - POT_HYST) || adc_pot_vol > (prev_adc_pot_vol + POT_HYST))
     {
-        f_front_pot_volume_changed = true;
+        flags.flagsFrontPanel.volumePotChanged = true;
         front_pot_vol = 4095 - adc_pot_vol;
     }
 

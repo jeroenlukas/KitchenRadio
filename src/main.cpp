@@ -16,6 +16,7 @@
 #include "soc/rtc_wdt.h"
 
 #include "configuration/config.h"
+#include "flags.h"
 #include "configuration/stations.h"
 #include "audioplayer/krAudioPlayer.h"
 #include "webradio/krWebradio.h"
@@ -321,9 +322,9 @@ void loop()
     front_multibuttons_loop();
 
     // ------=== FLAGS ===-------
-    if (f_front_pot_volume_changed)
+    if (flags.flagsFrontPanel.volumePotChanged)
     {
-        f_front_pot_volume_changed = false;
+        flags.flagsFrontPanel.volumePotChanged = false;
         Serial.println(front_pot_vol);
         lcd.setCursor(0, 2);
         lcd.printf("Volume: %3d", (int)map(front_pot_vol, 0, 4095, 0, 100));

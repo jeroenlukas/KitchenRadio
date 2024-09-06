@@ -2,7 +2,7 @@
 #define FRONTPANEL_H
 
 // Flags to signal change
-extern bool f_front_pot_volume_changed;
+//extern bool f_front_pot_volume_changed;
 extern bool f_front_pot_treble_changed;
 extern bool f_front_pot_bass_changed;
 
