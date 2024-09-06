@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "kr_info.h"
+#include "information/kr_info.h"
 
 int info_items_int[INFO_CNT];
 float info_items_float[INFO_CNT];

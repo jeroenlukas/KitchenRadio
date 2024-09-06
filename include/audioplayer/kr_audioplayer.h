@@ -1,7 +1,7 @@
 #ifndef AUDIOPLAYER_H
 #define AUDIOPLAYER_H
 
-#include <cbuf_ps.h>
+#include <audioplayer/cbuf_ps.h>
 #include "VS1053.h"
 
 

@@ -2,13 +2,13 @@
 
 //#include <cbuf.h>
 #include "VS1053.h"
-#include "configPinout.h"
-#include "configMisc.h"
-#include "constants.h"
-#include "kr_audioplayer.h"
-#include "cbuf_ps.h"
-#include "kr_info.h"
-#include "kr_webradio.h"
+#include "configuration/config.h"
+//#include "configuration/configMisc.h"
+#include "configuration/constants.h"
+#include "audioplayer/kr_audioplayer.h"
+#include "audioplayer/cbuf_ps.h"
+#include "information/kr_info.h"
+#include "webradio/kr_webradio.h"
 
 cbuf_ps circBuffer(1024); //64);
 char readBuffer[4096] __attribute__((aligned(4)));

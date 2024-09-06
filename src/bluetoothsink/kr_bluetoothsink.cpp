@@ -2,9 +2,9 @@
 #include <Arduino.h>
 #include <BluetoothA2DPSink.h>
 
-#include "kr_audioplayer.h"
+#include "audioplayer/kr_audioplayer.h"
 
-#include "kr_bluetoothsink.h"
+#include "bluetoothsink/kr_bluetoothsink.h"
 
 BluetoothA2DPSink a2dp_sink;
 

@@ -18,7 +18,7 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "cbuf_ps.h"
+#include "audioplayer/cbuf_ps.h"
 #include "esp_system.h"
 #include "esp_himem.h"
 #include "esp_heap_caps.h"

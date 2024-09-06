@@ -2,9 +2,9 @@
 #include <RotaryEncoder.h>
 #include <BfButtonManager.h>
 #include <BfButton.h>
-#include "configMisc.h"
-#include "configPinout.h"
-#include "frontpanel.h"
+#include "configuration/configMisc.h"
+#include "configuration/configPinout.h"
+#include "hmi/frontpanel.h"
 
 // To calibrate button ADC values
 //#define CAL_BUTTONS

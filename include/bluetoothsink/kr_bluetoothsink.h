@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <BluetoothA2DPSink.h>
 
-#include "kr_audioplayer.h"
+#include "audioplayer/kr_audioplayer.h"
 
 
 extern BluetoothA2DPSink a2dp_sink;

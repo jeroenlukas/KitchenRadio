@@ -1,18 +1,34 @@
 #include <Arduino.h>
 #include <WebServer.h>
+#include "FS.h"
+#include <LittleFS.h>
 
-#include "frontpanel.h"
-#include "kr_webserver.h"
+#include "hmi/frontpanel.h"
+#include "webserver/kr_webserver.h"
 #include "time.h"
-#include "kr_info.h"
+#include "information/kr_info.h"
+
+
 
 WebServer webserver(80);
-String webheader = "<html><head><title>KitchenRadio</title></head><body><font face='Arial'><h1>&#128251; KitchenRadio</h1><hr>";
+String webheader = "<html><head><title>KitchenRadio</title></head><body bgcolor='#cccccc'><font face='Arial'><h1>&#128251; KitchenRadio</h1><hr>";
 
 void handleRootPath()
 { //Handler for the rooth path
 
     String content;
+
+    File file = LittleFS.open("/test.txt");
+    if(!file){
+        Serial.println("Failed to open file for reading");
+        return;
+    }
+    String fileContent;
+    
+    while(file.available()){
+        fileContent += char(file.read());        
+    }
+    file.close();
 
     content = webheader + 
             "<br />Current time: " + info_get_string(INFO_TIME_SHORT) +
@@ -28,7 +44,9 @@ void handleRootPath()
             "<tr><td width='200'>Temperature:</td><td>" + String(info_get_float(INFO_WEATHER_TEMP)) + " &deg;C</td></tr>"
             "<tr><td>Windspeed:</td><td>" + String(info_get_float(INFO_WEATHER_WIND_KMH)) + " km/h</td></tr>"
             "</table>"
-            "<hr>"
+            "<hr><i>"
+            + (fileContent) + 
+            "</i><hr>"
             "<a href='/mode_off'>Off</a> <a href='/mode_radio'>Radio</a> <a href='/mode_bluetooth'>Bluetooth</a><br />"
             "<a href='/prev'>&larr;</a> <a href='/next'>&rarr;</a>"
             "<form method='GET' action='/set_volume'><input type='range' name='volume' min='0' max='100'><input type='submit' value='Set'></form>"

@@ -1,14 +1,15 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include "ArduinoJson.h"
-#include "kr_info.h"
+#include "information/kr_info.h"
+#include "configuration/config.h"
 
 //#include "configMisc.h"
 
 HTTPClient http;
 
 const String endpoint = "http://api.openweathermap.org/data/2.5/weather?q=Zierikzee,nl&units=metric&APPID=";
-const String key = "421c652804441735227f3cc5816de482";
+const String key = CONFIG_OPENWEATHER_KEY;
 
 float weather_temperature = 0.0;
 float windspeed_kmh = 0.0;

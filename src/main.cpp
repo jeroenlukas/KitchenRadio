@@ -15,18 +15,16 @@
 
 #include "soc/rtc_wdt.h"
 
-#include "configMisc.h"
-#include "configPinout.h"
-#include "stations.h"
-#include "kr_audioplayer.h"
-#include "kr_webradio.h"
-#include "kr_bluetoothsink.h"
-#include "frontpanel.h"
-#include "helloMp3.h"
-#include "kr_webserver.h"
-#include "kr_info.h"
-#include "kr_weather.h"
-#include "constants.h"
+#include "configuration/config.h"
+#include "configuration/stations.h"
+#include "audioplayer/kr_audioplayer.h"
+#include "webradio/kr_webradio.h"
+#include "bluetoothsink/kr_bluetoothsink.h"
+#include "hmi/frontpanel.h"
+#include "webserver/kr_webserver.h"
+#include "information/kr_info.h"
+#include "information/kr_weather.h"
+#include "configuration/constants.h"
 #include "version.h"
 
 #include "esp_system.h"
@@ -250,7 +248,7 @@ void setup()
     lcd.printf("KitchenRadio! v%s", kr_version);
     
     lcd.setCursor(0, 2);
-    lcd.print("Connecting...");
+    lcd.printf("Connecting to %s", ssid );
     // VS1053
     player.begin();
     player.setVolume(100);

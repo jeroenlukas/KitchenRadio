@@ -1,9 +1,6 @@
 #ifndef CONFIGMISC_H
 #define CONFIGMISC_H
 
-#define CONF_WIFI_SSID  "xxx"
-#define CONF_WIFI_PASSWORD  "xxx"
-
 #define FORMAT_LITTLEFS_IF_FAILED true
 
 #define POT_HYST    20

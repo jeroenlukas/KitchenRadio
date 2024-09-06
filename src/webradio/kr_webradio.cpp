@@ -1,7 +1,7 @@
 #include <WiFi.h>
-#include "kr_webradio.h"
-#include "kr_audioplayer.h"
-#include "configMisc.h"
+#include "webradio/kr_webradio.h"
+#include "audioplayer/kr_audioplayer.h"
+#include "configuration/configMisc.h"
 
 
 WiFiClient webradio_client;
