@@ -9,7 +9,7 @@
 
 extern BluetoothA2DPSink a2dp_sink;
 
-extern bool f_bluetoothsink_metadata_received;
+//extern bool f_bluetoothsink_metadata_received;
 
 //extern unsigned char bt_wav_header[44];
 

@@ -22,21 +22,19 @@ bool prev_button_encoder = true;
 
 // Externally available
 //bool f_front_pot_volume_changed = false;
-bool f_front_pot_treble_changed = false;
-bool f_front_pot_bass_changed = false;
+//bool f_front_pot_treble_changed = false;
+//bool f_front_pot_bass_changed = false;
 
-bool f_front_button_encoder_pressed = false;
+//bool f_front_button_encoder_pressed = false;
 
-bool f_front_encoder_turn_left = false;
-bool f_front_encoder_turn_right = false;
+//bool f_front_encoder_turn_left = false;
+//bool f_front_encoder_turn_right = false;
 
 int front_pot_vol = 0;
-int front_pot_treble = 0;
-int front_pot_bass = 0;
 
-bool f_button_off_pressed = false;
-bool f_button_radio_pressed = false;
-bool f_button_bluetooth_pressed = false;
+//bool f_button_off_pressed = false;
+//bool f_button_radio_pressed = false;
+//bool f_button_bluetooth_pressed = false;
 
 uint16_t reading, avg;
 uint16_t sum = 0;
@@ -59,13 +57,16 @@ void button_press_handler(BfButton *btn, BfButton::press_pattern_t pattern)
    switch(btn->getID())
    {
     case 0:
-        f_button_off_pressed = true;
+        ///f_button_off_pressed = true;
+        flags.frontPanel.buttonOffPressed = true;
         break;
     case 1:
-        f_button_radio_pressed = true;
+        //f_button_radio_pressed = true;
+        flags.frontPanel.buttonRadioPressed = true;
         break;
     case 2:
-        f_button_bluetooth_pressed = true;
+        //f_button_bluetooth_pressed = true;
+        flags.frontPanel.buttonBluetoothPressed = true;
         break;
     default:
         break;
@@ -117,8 +118,6 @@ void front_setup()
     btn_lamp.onPressFor(button_press_handler, 1000);
     buttonmanager.addButton(&btn_lamp,BTN_ADC_LAMP_MIN,BTN_ADC_LAMP_MAX); 
     
-    
-
     buttonmanager.begin();
 }
 
@@ -130,7 +129,7 @@ void front_read_pots()
 
     if (adc_pot_vol < (prev_adc_pot_vol - POT_HYST) || adc_pot_vol > (prev_adc_pot_vol + POT_HYST))
     {
-        flags.flagsFrontPanel.volumePotChanged = true;
+        flags.frontPanel.volumePotChanged = true;
         front_pot_vol = 4095 - adc_pot_vol;
     }
 
@@ -149,7 +148,8 @@ void front_read_buttons()
     // Encoder switch
     if (digitalRead(BUTTON_ENCODER) < prev_button_encoder)
     {
-        f_front_button_encoder_pressed = true;
+        //f_front_button_encoder_pressed = true;
+        flags.frontPanel.encoderButtonPressed = true;
     }
 
     // Multibuttons
@@ -185,11 +185,13 @@ void front_read_encoder()
     {
         if ((int)(encoder.getDirection()) == 1)
         {
-            f_front_encoder_turn_right = true;
+            //f_front_encoder_turn_right = true;
+            flags.frontPanel.encoderTurnRight = true;
         }
         else
         {
-            f_front_encoder_turn_left = true;
+            //f_front_encoder_turn_left = true;
+            flags.frontPanel.encoderTurnLeft = true;
         }
         pos = newPos;
     }

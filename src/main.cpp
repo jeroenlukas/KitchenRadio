@@ -22,7 +22,8 @@
 #include "webradio/krWebradio.h"
 #include "bluetoothsink/krBluetoothsink.h"
 #include "hmi/krFrontPanel.h"
-#include "webserver/krWebserver.h"
+//#include "webserver/krWebserver.h"
+#include "webserver/krAsyncWebserver.h"
 #include "information/krInfo.h"
 #include "information/krWeather.h"
 #include "configuration/constants.h"
@@ -75,6 +76,8 @@ void ticker_1s()
     information.system.uptimeSeconds++;
 
     f_update_rssi = true;
+
+    notifyClients();
 }
 
 void ticker_1m()
@@ -85,7 +88,7 @@ void ticker_1m()
 
 void ticker_100ms()
 {
-    webserver_handleclient();
+    //webserver_handleclient();
     // Read pots
     front_read_pots();
     front_read_buttons();
@@ -231,18 +234,6 @@ void setup()
         return;
     }
 
-    File file = LittleFS.open("/test.txt");
-    if(!file){
-        Serial.println("Failed to open file for reading");
-        return;
-    }
-    
-    Serial.println("File Content:");
-    while(file.available()){
-        Serial.write(file.read());
-    }
-    file.close();
-
     // LCD
     lcd.begin(20, 4);
     byte deg[] = {B00110, B01001, B01001, B00110, B00000, B00000, B00000, B00000};
@@ -282,7 +273,8 @@ void setup()
 
     player.setVolume(70);
 
-    webserver_setup();
+    //webserver_setup();
+    initWebSocket(); 
 
     // Tickers
     ticker_1s_ref.attach(1, ticker_1s);
@@ -322,10 +314,10 @@ void loop()
     front_multibuttons_loop();
 
     // ------=== FLAGS ===-------
-    if (flags.flagsFrontPanel.volumePotChanged)
+    if (flags.frontPanel.volumePotChanged)
     {
-        flags.flagsFrontPanel.volumePotChanged = false;
-        Serial.println(front_pot_vol);
+        flags.frontPanel.volumePotChanged = false;
+        //Serial.println(front_pot_vol);
         lcd.setCursor(0, 2);
         lcd.printf("Volume: %3d", (int)map(front_pot_vol, 0, 4095, 0, 100));
         player.setVolume(log(front_pot_vol + 1) / log(4095) * 100);
@@ -333,48 +325,19 @@ void loop()
         disp_return_time = DISPLAY_RETURN_TIME;
     }
 
-  /*  if (f_front_pot_treble_changed)
+    if (flags.frontPanel.encoderButtonPressed)
     {
-        f_front_pot_treble_changed = false;
-
-        int8_t nibble_tone = map(front_pot_treble, 0, 4095, -8, 7);
-
-        player.setTreble(nibble_tone);
-
-        lcd.setCursor(0, 2);
-        lcd.printf("Treble: %3d", nibble_tone);
-    }
-
-    if (f_front_pot_bass_changed)
-    {
-        f_front_pot_bass_changed = false;
-
-        int8_t nibble_bass = map(front_pot_bass, 0, 4095, 0, 15);
-
-        player.setBass(nibble_bass);
-
-        lcd.setCursor(0, 2);
-        lcd.printf("Bass:   %3d", (nibble_bass - 8));
-    }*/
-
-    if (f_front_button_encoder_pressed)
-    {
-        f_front_button_encoder_pressed = false;
+        flags.frontPanel.encoderButtonPressed = false;
 
         if(sound_mode == SOUNDMODE_BLUETOOTH)
         {
             bluetoothsink_playpause();
         }
-        // Toggle sound mode
-        /*if (sound_mode < 2)
-            set_sound_mode(sound_mode + 1);
-        else
-            set_sound_mode(0);*/
     }
 
-    if (f_front_encoder_turn_left)
+    if (flags.frontPanel.encoderTurnLeft)
     {
-        f_front_encoder_turn_left = false;
+        flags.frontPanel.encoderTurnLeft = false;
         Serial.println("left");
         if (sound_mode == SOUNDMODE_WEBRADIO && station > 0)
         {
@@ -391,9 +354,9 @@ void loop()
         }
     }
 
-    if (f_front_encoder_turn_right)
+    if (flags.frontPanel.encoderTurnRight)
     {
-        f_front_encoder_turn_right = false;
+        flags.frontPanel.encoderTurnRight = false;
         Serial.println("right");
 
         if (sound_mode == SOUNDMODE_WEBRADIO && station < (stations_cnt - 1))
@@ -413,9 +376,9 @@ void loop()
 
     audio_feedbuffer(sound_mode);
 
-    if (f_bluetoothsink_metadata_received)
+    if (flags.bluetoothSink.metadataReceived)
     {
-        f_bluetoothsink_metadata_received = false;
+        flags.bluetoothSink.metadataReceived = false;
         lcd.setCursor(0, 3);
         lcd.printf("BT: %.16s", bluetooth_media_title);
         audio_getVS1053info();
@@ -443,7 +406,10 @@ void loop()
         lcd.setCursor(0, 1);
         information.system.wifiRSSI = WiFi.RSSI();
         //lcd.printf("RSSI:%ddBm %7d", WiFi.RSSI(), circBuffer.available());
+        //notifyClients();
     }
+
+    awsCleanupClients();
 
     audio_feedbuffer(sound_mode);
 
@@ -467,19 +433,19 @@ void loop()
         information.timeShort = Netherlands.dateTime("H:i");
     }
 
-    if(f_button_off_pressed)
+    if(flags.frontPanel.buttonOffPressed)
     {
-        f_button_off_pressed = false;
+        flags.frontPanel.buttonOffPressed = false;
         set_sound_mode(SOUNDMODE_OFF);
     }
-    if(f_button_radio_pressed)
+    if(flags.frontPanel.buttonRadioPressed)
     {
-        f_button_radio_pressed = false;
+        flags.frontPanel.buttonRadioPressed = false;
         set_sound_mode(SOUNDMODE_WEBRADIO);
     }
-    if(f_button_bluetooth_pressed)
+    if(flags.frontPanel.buttonBluetoothPressed)
     {
-        f_button_bluetooth_pressed = false;
+        flags.frontPanel.buttonBluetoothPressed = false;
         set_sound_mode(SOUNDMODE_BLUETOOTH);
     }
 }

@@ -5,6 +5,7 @@
 #include "audioplayer/krAudioPlayer.h"
 
 #include "bluetoothsink/krBluetoothSink.h"
+#include "flags.h"
 
 BluetoothA2DPSink a2dp_sink;
 
@@ -26,8 +27,6 @@ unsigned char bt_wav_header[44] = {
     0xFF, 0xFF, 0xFF, 0xFF  // subchunk3size (endless)
 };
 
-bool f_bluetoothsink_metadata_received = false;
-
 char bluetooth_media_title[255];
 
 int cnt = 0;
@@ -45,7 +44,8 @@ a2dp_sink.set_auto_reconnect(true,  1000);
     {
         strncat(bluetooth_media_title, " - ", sizeof(bluetooth_media_title) - 1);
         strncat(bluetooth_media_title, (char *)data2, sizeof(bluetooth_media_title) - 1);
-        f_bluetoothsink_metadata_received = true;
+        
+        flags.bluetoothSink.metadataReceived = true;
     }
 }
 

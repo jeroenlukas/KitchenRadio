@@ -58,41 +58,41 @@ void handleRootPath()
 
 void handle_mode_off()
 {
-    f_button_off_pressed = true;
+    //f_button_off_pressed = true;
     handleRootPath();
 }
 
 void handle_mode_radio()
 {
-    f_button_radio_pressed = true;
+    //f_button_radio_pressed = true;
 
     handleRootPath();
 }
 
 void handle_mode_bluetooth()
 {
-    f_button_bluetooth_pressed = true;
+    //f_button_bluetooth_pressed = true;
 
     handleRootPath();
 }
 
 void handle_prev()
 {
-    f_front_encoder_turn_left = true;
+    //f_front_encoder_turn_left = true;
 
     handleRootPath();
 }
 
 void handle_next()
 {
-    f_front_encoder_turn_right = true;
+    //f_front_encoder_turn_right = true;
 
     handleRootPath();
 }
 
 void handle_setvolume()
 {
-    f_front_encoder_turn_right = true;
+    //f_front_encoder_turn_right = true;
 
     handleRootPath();
 }

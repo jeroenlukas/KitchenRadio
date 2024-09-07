@@ -4,6 +4,18 @@
 struct FlagsFrontPanel
 {
     bool volumePotChanged;
+
+    bool encoderButtonPressed;
+    bool encoderTurnRight;
+    bool encoderTurnLeft;
+
+    bool buttonOffPressed;
+    bool buttonRadioPressed;
+    bool buttonBluetoothPressed;
+    bool buttonSystemPressed;
+    bool buttonAlarmPressed;
+    bool buttonLampPressed;
+
 };
 
 #endif
