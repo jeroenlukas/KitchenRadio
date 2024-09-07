@@ -1,52 +1,40 @@
 #include <Arduino.h>
-//#include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include "LittleFS.h"
 #include <ArduinoJson.h>
 #include "information/krInfo.h"
-//#include <Adafruit_BME280.h>
-//#include <Adafruit_Sensor.h>
+#include "version.h"
+
+// https://randomnerdtutorials.com/esp32-websocket-server-sensor/
 
 AsyncWebServer server(80);
 
 // Create a WebSocket object
 AsyncWebSocket ws("/ws");
 
-// Json Variable to Hold Sensor Readings
-//JSONVar readings;
- //DynamicJsonDocument readings(1024);
-
-// Get Sensor Readings and return JSON object
-String getSensorReadings(){
-    //readings = information.system.wifiRSSI;
+void notifyClients(void) {
     String jsonString;
     DynamicJsonDocument doc(1024);
-    doc["uptimeSeconds"]=information.system.uptimeSeconds;
-    doc["rssi"]=information.system.wifiRSSI;
-    serializeJson(doc,jsonString);
-   // serializeJson(String(information.system.uptimeSeconds),readings);
-    //String jsonString = JSON.stringify(readings);
-    return jsonString;
-}
+    doc["kr-version"] = kr_version;
 
-void notifyClients(void) {
-    String sensorReadings = getSensorReadings();
-    ws.textAll(sensorReadings);
+    doc["system-uptimeSeconds"]=information.system.uptimeSeconds;
+    doc["system-rssi"]=information.system.wifiRSSI;
+
+    doc["weather-temperature"] = information.weather.temperature;
+    doc["weather-windspeedkmh"] = information.weather.windSpeedKmh;
+
+    doc["audioplayer-volume"] = information.audioPlayer.volume;
+    serializeJson(doc,jsonString);
+    
+    ws.textAll(jsonString);
 }
 
 void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
   AwsFrameInfo *info = (AwsFrameInfo*)arg;
   if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
-    //data[len] = 0;
-    //String message = (char*)data;
-    // Check if the message is "getReadings"
-    //if (strcmp((char*)data, "getReadings") == 0) {
-      //if it is, send current sensor readings
-      //String sensorReadings = getSensorReadings();
-      //Serial.print(sensorReadings);
+
       notifyClients();
-    //}
   }
 }
 

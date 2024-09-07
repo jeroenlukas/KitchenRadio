@@ -3,21 +3,30 @@
     <head>
         <title>KitchenRadio</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        
+        <link rel="stylesheet" type="text/css" href="style.css">
         
     </head>
     <body>
         <div class="topnav">
-            <h1>KitchenRadio 2.0</h1>
+            <h1>KitchenRadio 2.0</h1> <span id="kr-version"></span>
         </div>
         <div class="content">
             <div class="card-grid">
                 <div class="card">
-                    <p class="card-title"><i class="fas fa-thermometer-threequarters" style="color:#059e8a;"></i> Uptime</p>
-                    <p class="reading"><span id="uptimeSeconds"></span> sec</p>
+                    <p class="card-title">System</p>
+                    <p class="reading">Uptime: <span id="system-uptimeSeconds"></span> sec</p>
+                    <p class="reading">RSSI: <span id="system-rssi"></span> dBm</p>
+                </div>
 
-                    <p class="card-title"><i class="fas fa-thermometer-threequarters" style="color:#059e8a;"></i> RSSI</p>
-                    <p class="reading"><span id="rssi"></span> dBm</p>
+                <div class="card">
+                    <p class="card-title">Audio</p>
+                    <p class="reading">Volume: <span id="audioplayer-volume"></span> &percnt;</p>                    
+                </div>
+
+                <div class="card">
+                    <p class="card-title">Weather</p>
+                    <p class="reading">Temperature: <span id="weather-temperature"></span> &deg;C</p>
+                    <p class="reading">Windspeed: <span id="weather-windspeedkmh"></span> km/h</p>
                 </div>
                
             </div>

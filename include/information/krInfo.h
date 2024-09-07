@@ -16,6 +16,8 @@ class Information {
             int channels;
             int bitRate;
             int sampleRate;
+
+            int volume;
         };
         struct Weather
         {
@@ -23,6 +25,8 @@ class Information {
             double windSpeedKmh;
         };
         
+
+
         System system;
         AudioPlayer audioPlayer;
         Weather weather;

@@ -319,7 +319,9 @@ void loop()
         flags.frontPanel.volumePotChanged = false;
         //Serial.println(front_pot_vol);
         lcd.setCursor(0, 2);
-        lcd.printf("Volume: %3d", (int)map(front_pot_vol, 0, 4095, 0, 100));
+        int volume_mapped = (int)map(front_pot_vol, 0, 4095, 0, 100);
+        information.audioPlayer.volume = volume_mapped;
+        lcd.printf("Volume: %3d", volume_mapped);
         player.setVolume(log(front_pot_vol + 1) / log(4095) * 100);
 
         disp_return_time = DISPLAY_RETURN_TIME;
