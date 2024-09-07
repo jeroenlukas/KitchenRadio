@@ -10,10 +10,24 @@ h1 {
 .topnav {
     overflow: hidden;
     background-color: #da6900;
+    padding: 10px;
     color: white;
+
+    a {
+        color: white;
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
 }
+
+.header-title {
+    font-size: 30px;
+}
+
 body {
-    margin: 10px;
+    margin: 0px;
 }
 .content {
     padding: 50px;
@@ -27,7 +41,7 @@ body {
 }
 .card {
     background-color: white;
-    margin: 10px;
+    margin: 5px;
     padding: 10px;
     box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
 }
