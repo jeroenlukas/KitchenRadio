@@ -27,22 +27,13 @@ bool weather_retrieve()
     if (httpCode > 0)
     {
         String payload = http.getString();
-       // Serial.println(httpCode);
-        //Serial.println(payload);
         DynamicJsonDocument doc(1024);
+
         deserializeJson(doc, payload);
-        information.weather.temperature = doc["main"]["temp"];
+
+        information.weather.temperature = doc["main"]["temp"];        
         information.weather.windSpeedKmh = (double)(doc["wind"]["speed"]) * 3.6;
         
-        //weather_temperature_int = round(weather_temperature);
-        //windspeed_kmh = windspeed * 3.6;
-        //temperature = temperature_str.toDouble();
-        //Serial.printf("temp: %f - wind: %f km/h", weather_temperature, windspeed_kmh );
-
-        
-        //info_set_float(INFO_WEATHER_TEMP, weather_temperature);
-        //info_set_float(INFO_WEATHER_WIND_KMH, windspeed_kmh);
-
         ret = true;
     }
     else

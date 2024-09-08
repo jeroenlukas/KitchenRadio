@@ -6,6 +6,7 @@ window.addEventListener('load', onload);
 
 function onload(event) {
     initWebSocket();
+    initButtons();
 }
 
 function getReadings(){
@@ -29,6 +30,21 @@ function onOpen(event) {
 function onClose(event) {
     console.log('Connection closed');
     setTimeout(initWebSocket, 2000);
+}
+
+function initButtons() {
+    document.getElementById('button_audio_off').addEventListener('click', buttonOffPressed);
+    document.getElementById('button_audio_webradio').addEventListener('click', buttonWebradioPressed);
+    
+}
+
+function buttonOffPressed(){
+    console.log('off pressed');
+    websocket.send('buttonOffPressed');
+}
+
+function buttonWebradioPressed(){
+    websocket.send('buttonWebradioPressed');
 }
 
 // Function that receives the message from the ESP32 with the readings

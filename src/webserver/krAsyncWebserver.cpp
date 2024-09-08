@@ -5,6 +5,7 @@
 #include <ArduinoJson.h>
 #include "information/krInfo.h"
 #include "version.h"
+#include "flags.h"
 
 // https://randomnerdtutorials.com/esp32-websocket-server-sensor/
 
@@ -16,13 +17,19 @@ AsyncWebSocket ws("/ws");
 void notifyClients(void) {
     String jsonString;
     DynamicJsonDocument doc(1024);
+
+    char rounded[10] = "";
+
     doc["kr-version"] = kr_version;
 
     doc["system-uptimeSeconds"]=information.system.uptimeSeconds;
     doc["system-rssi"]=information.system.wifiRSSI;
 
-    doc["weather-temperature"] = information.weather.temperature;
-    doc["weather-windspeedkmh"] = information.weather.windSpeedKmh;
+    sprintf(rounded, "%.1f", information.weather.temperature);
+    doc["weather-temperature"] = rounded;
+    sprintf(rounded, "%.1f", information.weather.windSpeedKmh);
+    doc["weather-windspeedkmh"] = rounded;
+    //doc["weather-windspeedkmh"] = information.weather.windSpeedKmh;
 
     doc["audioplayer-volume"] = information.audioPlayer.volume;
     serializeJson(doc,jsonString);
@@ -33,8 +40,21 @@ void notifyClients(void) {
 void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
   AwsFrameInfo *info = (AwsFrameInfo*)arg;
   if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
+      
+      data[len] = '\0';
 
-      notifyClients();
+      String message = String((char*)data);
+      Serial.printf("received: %s\n", message.c_str());
+      
+      if(message == "buttonOffPressed")
+      {
+        flags.frontPanel.buttonOffPressed = true;
+      }
+      else if(message == "buttonWebradioPressed")
+      {
+        flags.frontPanel.buttonRadioPressed = true;
+      }
+      
   }
 }
 
@@ -61,6 +81,7 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
 }
 
 void initWebSocket() {
+  Serial.print("Starting websocket.");
   ws.onEvent(onEvent);
   server.addHandler(&ws);
 
