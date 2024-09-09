@@ -36,6 +36,7 @@ button{
 
 body {
     margin: 0px;
+    background-color: #555555;
 }
 .content {
     padding: 50px;
@@ -48,7 +49,7 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 .card {
-    background-color: white;
+    background-color: rgb(150, 150, 150);
     margin: 5px;
     padding: 10px;
     box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);

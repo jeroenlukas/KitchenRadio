@@ -80,16 +80,43 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
   }
 }
 
+String buildHtmlPage(String contentFile)
+{
+  //TODO Keep fileHeader and fileFooter in ram? Need only to be read once.
+    File fileHeader = LittleFS.open("/www/_header.html", "r");
+    File fileContent = LittleFS.open("/www/" + contentFile, "r");
+    File fileFooter = LittleFS.open("/www/_footer.html", "r");
+
+    String htmlHeader = fileHeader.readString();
+    fileHeader.close();
+
+    String htmlContent = fileContent.readString();
+    fileContent.close();
+
+    String htmlFooter = fileFooter.readString();
+    fileFooter.close();
+
+    String html = htmlHeader + htmlContent + htmlFooter;
+    return html;
+}
+
 void initWebSocket() {
   Serial.print("Starting websocket.");
   ws.onEvent(onEvent);
   server.addHandler(&ws);
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(LittleFS, "/www/index.html", "text/html");
+    //request->send(LittleFS, "/www/index.html", "text/html");
+    request->send(200, "text/html", buildHtmlPage("index.html"));
   });
 
-    server.serveStatic("/", LittleFS, "/www/");
+  server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request) {
+    //request->send(LittleFS, "/www/index.html", "text/html");
+    request->send(200, "text/html", buildHtmlPage("settings.html"));
+  });
+
+
+  server.serveStatic("/", LittleFS, "/www/");
 
   // Start server
   server.begin();

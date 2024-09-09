@@ -33,9 +33,14 @@ function onClose(event) {
 }
 
 function initButtons() {
-    document.getElementById('button_audio_off').addEventListener('click', buttonOffPressed);
-    document.getElementById('button_audio_webradio').addEventListener('click', buttonWebradioPressed);
+    eleButtonAudioOff = document.getElementById('button_audio_off');
+    if(eleButtonAudioOff != null) eleButtonAudioOff.addEventListener('click', buttonOffPressed);
+
+    eleButtonAudioWebradio = document.getElementById('button_audio_webradio');
+    if(eleButtonAudioWebradio != null) eleButtonAudioWebradio.addEventListener('click', buttonWebradioPressed);    
     
+    eleButtonAudioBluetooth = document.getElementById('button_audio_bluetooth');
+    if(eleButtonAudioBluetooth != null) eleButtonAudioBluetooth.addEventListener('click', buttonBluetoothPressed);
 }
 
 function buttonOffPressed(){
@@ -47,6 +52,10 @@ function buttonWebradioPressed(){
     websocket.send('buttonWebradioPressed');
 }
 
+function buttoBluetoothPressed(){
+    websocket.send('buttonBluetoothPressed');
+}
+
 // Function that receives the message from the ESP32 with the readings
 function onMessage(event) {
     console.log(event.data);
@@ -55,6 +64,9 @@ function onMessage(event) {
 
     for (var i = 0; i < keys.length; i++){
         var key = keys[i];
-        document.getElementById(key).innerHTML = myObj[key];
+        var ele = document.getElementById(key);
+        if(ele != null){
+            ele.innerHTML = myObj[key];
+        }
     }
 }

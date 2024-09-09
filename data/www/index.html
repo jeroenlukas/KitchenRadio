@@ -1,38 +1,19 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>KitchenRadio</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" type="text/css" href="style.css">
+
+<div class="content">
+    <div class="card-grid">
+        <div class="card">
+            <p class="card-title">&#127926; Audio</p>
+            <p class="reading">Volume: <span id="audioplayer-volume"></span> &percnt;</p>                    
+            <button id="button_audio_off">Off</button> <button id="button_audio_webradio">Internet radio</button> <button id="audio_bluetooth">Bluetooth</button>
+        </div>
+
+        <div class="card">
+            <p class="card-title">&#9925; Weather</p>
+            <p class="reading">Temperature: <span id="weather-temperature"></span> &deg;C</p>
+            <p class="reading">Windspeed: <span id="weather-windspeedkmh"></span> km/h</p>
+        </div>
         
-    </head>
-    <body>
-        <div class="topnav">
-            <span class="header-title">KitchenRadio 2.0</span> v<span id="kr-version"></span>
-            <p><a href='/'>Home</a> <a href='/stations'>Stations</a> <a href='/settings'>Settings</a></p>
-        </div>
-        <div class="content">
-            <div class="card-grid">
-                <div class="card">
-                    <p class="card-title">&#128295; System</p>
-                    <p class="reading">Uptime: <span id="system-uptimeSeconds"></span> sec</p>
-                    <p class="reading">RSSI: <span id="system-rssi"></span> dBm</p>
-                </div>
-
-                <div class="card">
-                    <p class="card-title">&#127926; Audio</p>
-                    <p class="reading">Volume: <span id="audioplayer-volume"></span> &percnt;</p>                    
-                    <button id="button_audio_off">Off</button> <button id="button_audio_webradio">Internet radio</button> <button id="audio_bluetooth">Bluetooth</button>
-                </div>
-
-                <div class="card">
-                    <p class="card-title">&#9925; Weather</p>
-                    <p class="reading">Temperature: <span id="weather-temperature"></span> &deg;C</p>
-                    <p class="reading">Windspeed: <span id="weather-windspeedkmh"></span> km/h</p>
-                </div>
-               
-            </div>
-        </div>
-        <script src="script.js"></script>
-    </body>
-</html>
+    </div>
+</div>
+        
+    

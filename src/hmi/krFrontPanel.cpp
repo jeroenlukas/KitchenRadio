@@ -125,12 +125,14 @@ void front_setup()
 
 void front_read_pots()
 {
-    adc_pot_vol = analogRead(POT_VOLUME);
+    adc_pot_vol = (4095 - analogRead(POT_VOLUME)) >> 5;
+
+    Serial.print(adc_pot_vol);
 
     if (adc_pot_vol < (prev_adc_pot_vol - POT_HYST) || adc_pot_vol > (prev_adc_pot_vol + POT_HYST))
     {
         flags.frontPanel.volumePotChanged = true;
-        front_pot_vol = 4095 - adc_pot_vol;
+        front_pot_vol = adc_pot_vol;
     }
 
     prev_adc_pot_vol = adc_pot_vol;

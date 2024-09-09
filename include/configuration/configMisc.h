@@ -4,7 +4,7 @@
 #define FORMAT_LITTLEFS_IF_FAILED true
 
 // Volume pot hysteresis
-#define POT_HYST    30
+#define POT_HYST    1
 
 // Circular buffer size in PSRAM
 #define CIRCBUFFER_SIZE 2 * 1024 * 1024 // 2 MB
